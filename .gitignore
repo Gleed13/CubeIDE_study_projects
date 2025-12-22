@@ -1,0 +1,83 @@
+# =========================
+# STM32CubeIDE / Eclipse
+# =========================
+.metadata/
+.recommenders/
+.settings/
+.project
+.cproject
+*.launch
+
+# CubeIDE workspace "Debug Configurations"
+Debug Configurations/
+
+# =========================
+# Build output folders
+# (common names in CubeIDE)
+# =========================
+Debug/
+Release/
+*Debug/
+*Release/
+build/
+bin/
+
+# Some projects generate these in subfolders
+**/Debug/
+**/Release/
+**/build/
+
+# =========================
+# Generated binaries / maps
+# =========================
+*.elf
+*.hex
+*.bin
+*.map
+*.list
+*.o
+*.a
+*.d
+*.su
+*.i
+*.s
+*.ld
+
+# =========================
+# GCC / Make dependency files
+# =========================
+*.dep
+*.d
+*.mk
+
+# =========================
+# CubeMX generated (optional)
+# Keep or ignore depending on your workflow
+# =========================
+# Keep the .ioc (recommended to track)
+# !*.ioc
+
+# If you DON'T want to track CubeMX local backups:
+*.ioc.bak
+*.mxproject  # some CubeMX/CubeIDE versions create this
+
+# =========================
+# Core dumps / logs
+# =========================
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+
+# =========================
+# OS / IDE junk
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# VS Code (if you open project there too)
+# =========================
+.vscode/
