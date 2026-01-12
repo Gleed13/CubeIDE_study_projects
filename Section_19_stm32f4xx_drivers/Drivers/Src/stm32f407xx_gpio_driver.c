@@ -13,44 +13,44 @@ void GPIO_PClkControl(GPIO_RegDef *pGPIOx, uint8_t enable)
     if (enable)
     {
         if (pGPIOx == GPIOA)
-            GPIOA_PCLK_EN;
+            GPIOA_PCLK_EN();
         else if (pGPIOx == GPIOB)
-            GPIOB_PCLK_EN;
+            GPIOB_PCLK_EN();
         else if (pGPIOx == GPIOC)
-            GPIOC_PCLK_EN;
+            GPIOC_PCLK_EN();
         else if (pGPIOx == GPIOD)
-            GPIOD_PCLK_EN;
+            GPIOD_PCLK_EN();
         else if (pGPIOx == GPIOE)
-            GPIOE_PCLK_EN;
+            GPIOE_PCLK_EN();
         else if (pGPIOx == GPIOF)
-            GPIOF_PCLK_EN;
+            GPIOF_PCLK_EN();
         else if (pGPIOx == GPIOG)
-            GPIOG_PCLK_EN;
+            GPIOG_PCLK_EN();
         else if (pGPIOx == GPIOH)
-            GPIOH_PCLK_EN;
+            GPIOH_PCLK_EN();
         else if (pGPIOx == GPIOI)
-            GPIOI_PCLK_EN;
+            GPIOI_PCLK_EN();
     }
     else
     {
         if (pGPIOx == GPIOA)
-            GPIOA_PCLK_DI;
+            GPIOA_PCLK_DI();
         else if (pGPIOx == GPIOB)
-            GPIOB_PCLK_DI;
+            GPIOB_PCLK_DI();
         else if (pGPIOx == GPIOC)
-            GPIOC_PCLK_DI;
+            GPIOC_PCLK_DI();
         else if (pGPIOx == GPIOD)
-            GPIOD_PCLK_DI;
+            GPIOD_PCLK_DI();
         else if (pGPIOx == GPIOE)
-            GPIOE_PCLK_DI;
+            GPIOE_PCLK_DI();
         else if (pGPIOx == GPIOF)
-            GPIOF_PCLK_DI;
+            GPIOF_PCLK_DI();
         else if (pGPIOx == GPIOG)
-            GPIOG_PCLK_DI;
+            GPIOG_PCLK_DI();
         else if (pGPIOx == GPIOH)
-            GPIOH_PCLK_DI;
+            GPIOH_PCLK_DI();
         else if (pGPIOx == GPIOI)
-            GPIOI_PCLK_DI;
+            GPIOI_PCLK_DI();
     }
 }
 
@@ -66,7 +66,37 @@ void GPIO_Init(GPIO_handle *pGPIOHandle)
     }
     else
     {
-        //interrupt mode
+        switch (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode)
+        {
+            case GPIO_MODE_IT_FT:
+                /* Configure the FTSR */
+                EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+                /* Clear corresponding RTSR bit */
+                EXTI->RTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+                break;
+            case GPIO_MODE_IT_RT:
+                /* Configure the RTSR */
+                EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+                /* Clear corresponding FTSR bit */
+                EXTI->FTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+                break;
+            case GPIO_MODE_IT_RFT:
+                /* Configure the FTSR */
+                EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+                /* Configure the RTSR */
+                EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+                break;
+        }
+
+        /* Configure GPIO port selection in SYSCFG_EXTICR */
+        uint8_t crNumber = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 4;
+        uint8_t crSection = (pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4) * 4;
+        uint8_t portcode = GPIO_BASEADDR_TO_CODE(pGPIOHandle->pGPIOx);
+        SYSCFG_PCLK_EN();
+        SYSCFG->EXTICR[crNumber] = portcode << crSection;
+
+        /* Enable EXTI interrupt delivery using IMR */
+        EXTI->IMR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
     }
 
     //configure pin speed
@@ -98,23 +128,23 @@ void GPIO_Init(GPIO_handle *pGPIOHandle)
 void GPIO_DeInit(GPIO_RegDef *pGPIOx)
 {
     if (pGPIOx == GPIOA)
-        GPIOA_REG_RESET;
+        GPIOA_REG_RESET();
     else if (pGPIOx == GPIOB)
-        GPIOB_REG_RESET;
+        GPIOB_REG_RESET();
     else if (pGPIOx == GPIOC)
-        GPIOC_REG_RESET;
+        GPIOC_REG_RESET();
     else if (pGPIOx == GPIOD)
-        GPIOD_REG_RESET;
+        GPIOD_REG_RESET();
     else if (pGPIOx == GPIOE)
-        GPIOE_REG_RESET;
+        GPIOE_REG_RESET();
     else if (pGPIOx == GPIOF)
-        GPIOF_REG_RESET;
+        GPIOF_REG_RESET();
     else if (pGPIOx == GPIOG)
-        GPIOG_REG_RESET;
+        GPIOG_REG_RESET();
     else if (pGPIOx == GPIOH)
-        GPIOH_REG_RESET;
+        GPIOH_REG_RESET();
     else if (pGPIOx == GPIOI)
-        GPIOI_REG_RESET;
+        GPIOI_REG_RESET();
 }
 
 uint8_t GPIO_ReadFromInputPin(GPIO_RegDef *pGPIOx, uint8_t pinNumber)
